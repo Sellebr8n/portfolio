@@ -1,8 +1,8 @@
 import classNames from 'classnames';
 import { HiMiniChevronDown } from 'react-icons/hi2';
-import ScrollIntoView from './shared/components/client.ScrollIntoView';
-import Links from './shared/components/server.Links';
-import Paragraph from './shared/components/server.Paragraph';
+import ScrollIntoView from './components/client.ScrollIntoView';
+import Links from './components/server.Links';
+import Paragraph from './components/server.Paragraph';
 
 const Landing = () => {
   return (

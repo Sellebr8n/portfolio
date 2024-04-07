@@ -1,7 +1,7 @@
 import { HiMiniChevronUp } from 'react-icons/hi2';
 import { HiMiniTrophy } from 'react-icons/hi2';
-import ScrollIntoView from './shared/components/client.ScrollIntoView';
-import Timeline from './shared/components/server.Timeline';
+import ScrollIntoView from './components/client.ScrollIntoView';
+import Timeline from './components/server.Timeline';
 
 type EventProps = {
   title: string;
