@@ -15,6 +15,15 @@
     --background-end: 19, 15, 64;
   }
 }
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-inter);
+}
 body {
   color: rgb(var(--foreground));
   background-color: rgb(var(--background-start));
