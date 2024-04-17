@@ -25,8 +25,13 @@ h6 {
   font-family: var(--font-inter);
 }
 body {
+  font-family: var(--font-roboto-mono);
   color: rgb(var(--foreground));
   background-color: rgb(var(--background-start));
+}
+
+.gameboy {
+  font-family: var(--font-press-start-2p);
 }
 
 @layer utilities {

@@ -9,10 +9,13 @@ const config: Config = {
   theme: {
     extend: {
       backgroundImage: {
-        'hero': "url('/hero.jpg')",
+        hero: "url('/hero.jpg')",
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/forms'),
+  ],
 };
 export default config;
