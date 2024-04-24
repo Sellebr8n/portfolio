@@ -1,4 +1,4 @@
-import { getAllPostSlugs, getPostData } from '../lib/blogs';
+import { getPostData } from '../lib/blogs';
 
 type Params = {
   slug: string;
@@ -24,14 +24,17 @@ export async function generateMetadata({ params }: Props) {
 export default async function Blog({ params }: Props) {
   const post: PostData = await getPostData(params.slug);
   return (
-    <main className="flex min-h-screen flex-col items-center p-24">
-      <h1 className="font-extrabold text-3xl mb-1">{post.title}</h1>
+    <main className="flex flex-col p-8 container mx-auto prose">
+        <h1 className="font-extrabold text-3xl mb-1">{post.title}</h1>
 
-      <div className="text-gray-500 font-medium mb-5">
-        <time dateTime={post.date}>{post.date}</time>
-      </div>
+        <div className="text-gray-500 font-medium mb-5">
+          <time dateTime={post.date}>{post.date}</time>
+        </div>
 
-      <div className="text-gray-600 prose" dangerouslySetInnerHTML={{ __html: post.content }} />
+      <div
+        className="text-gray-700"
+        dangerouslySetInnerHTML={{ __html: post.content }}
+      />
     </main>
   );
 }

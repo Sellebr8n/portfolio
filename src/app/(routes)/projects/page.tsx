@@ -1,6 +1,5 @@
 import Link from 'next/link';
 
-
 const links = [
   {
     title: 'Lights Out',
@@ -8,25 +7,25 @@ const links = [
     link: '/projects/lightsout',
   },
   {
-    title: 'Weather App',
-    description: 'A simple weather app using OpenWeatherMap API',
-    link: '/projects/weather',
-  },
-  {
-    title: 'Markdown Previewer',
-    description: 'A markdown previewer',
-    link: '/projects/markdown',
-  },
-  {
     title: 'Drum Machine',
     description: 'A drum machine',
-    link: '/projects/drum',
+    link: '/projects/drum-maschine',
   },
-  {
-    title: 'Pomodoro Clock',
-    description: 'A pomodoro clock',
-    link: '/projects/pomodoro',
-  },
+  // {
+  //   title: 'Pomodoro Clock',
+  //   description: 'A pomodoro clock',
+  //   link: '/projects/pomodoro',
+  // },
+  // {
+  //   title: 'Weather App',
+  //   description: 'A simple weather app using OpenWeatherMap API',
+  //   link: '/projects/weather',
+  // },
+  // {
+  //   title: 'Markdown Previewer',
+  //   description: 'A markdown previewer',
+  //   link: '/projects/markdown',
+  // },
 ];
 
 const Card = ({
