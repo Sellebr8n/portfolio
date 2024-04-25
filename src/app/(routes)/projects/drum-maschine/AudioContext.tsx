@@ -23,7 +23,6 @@ const AudioContextProvider: React.FC<BaseProps> = ({ children }) => {
     setAudioContext(audioContext);
   }, []);
 
-
   return <Context.Provider value={audioContext}>{children}</Context.Provider>;
 };
 
