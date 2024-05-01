@@ -9,7 +9,7 @@ type DrumPadProps = {
 };
 
 const DrumPad: React.FC<DrumPadProps> = ({ name, audioSrc }) => {
-  const audioContext = useAudioContext();
+  const { audioContext } = useAudioContext();
 
   const playSound = async () => {
     if (!audioContext) return;
@@ -25,7 +25,10 @@ const DrumPad: React.FC<DrumPadProps> = ({ name, audioSrc }) => {
   };
 
   return (
-    <button className="p-2 m-2 bg-slate-950 rounded-md text-slate-400" onClick={playSound}>
+    <button
+      type="button"
+      className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+      onClick={playSound}>
       {name}
     </button>
   );

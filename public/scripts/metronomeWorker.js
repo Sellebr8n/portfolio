@@ -19,7 +19,3 @@ self.onmessage = function (e) {
     timerID = null;
   }
 };
-
-self.addEventListener("install", function (event) {
-  console.log("Hello world from the Service Worker 🤙");
-});
