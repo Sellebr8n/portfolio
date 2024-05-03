@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
-import { useAudioContext } from './AudioContext';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { useAudioContext } from './ClockProvider';
 
 const Range = ({
   label,
@@ -39,22 +39,29 @@ const Range = ({
   );
 };
 
-const Metronome: React.FC = () => {
-  const beatCounter = useRef(0);
-  const { start, clockRunning, currentBeat, currentTempo, setTempo } = useAudioContext();
+const Metronome: React.FC<{ audioContext: AudioContext }> = ({ audioContext }) => {
+  const { start, clockRunning, currentBeat, scheduleEvent, currentTempo, setTempo } =
+    useAudioContext();
 
   useEffect(() => {
     if (clockRunning) {
-      if (currentBeat % 16 === 0) {
-        beatCounter.current++;
-      }
-      if (beatCounter.current === 4) {
-        beatCounter.current = 0;
-      }
-    } else {
-      beatCounter.current = 0;
+      scheduleEvent((beat, time) => {
+        const osc = audioContext.createOscillator();
+        osc.connect(audioContext.destination);
+
+        if (beat % 16 === 0) {
+          osc.frequency.value = 880.0;
+        } else if (beat % 4 === 0) {
+          osc.frequency.value = 440.0;
+        } else {
+          return;
+        }
+        const noteLenght = 0.05; // length of "beep" (in seconds)
+        osc.start(time);
+        osc.stop(time + noteLenght);
+      }, 0);
     }
-  }, [clockRunning, currentBeat]);
+  }, [audioContext, clockRunning, currentBeat, scheduleEvent]);
 
   return (
     <div className="flex flex-col mx-auto">
@@ -67,7 +74,7 @@ const Metronome: React.FC = () => {
         id="tempo-ctrl"
         value={currentTempo}
       />
-      <div className="p-4">Step: {beatCounter.current + 1}</div>
+      <div className="p-4">Step: {currentBeat}</div>
       <button
         type="button"
         onClick={start}

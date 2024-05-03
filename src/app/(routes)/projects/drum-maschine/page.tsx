@@ -1,22 +1,35 @@
-import DrumPad from './DrumPad';
+'use client';
+
 import Metronome from './Metronome';
-import AudioContextProvider from './AudioContext';
+import ClockProvider from './ClockProvider';
+import { useEffect, useState } from 'react';
 
 export default function DrumMaschine() {
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+  useEffect(() => {
+    setAudioContext(new AudioContext());
+  }, []);
+
+  if (!audioContext) {
+    return <div>Loading...</div>;
+  }
   return (
     <div>
-      <AudioContextProvider>
+      <ClockProvider
+        audioContext={audioContext}
+        options={{
+          lookaheadMs: 10,
+          scheduleAheadTimeSecs: 0.15,
+        }}>
         <div className="p-8">
           <h2>Metronome</h2>
-          <Metronome />
+          <Metronome audioContext={audioContext} />
         </div>
         <div className="p-8">
           <h2>Drum Maschine</h2>
-          <section className="grid grid-cols-4 grid-rows-4">
-            <DrumPad name="kick-1" audioSrc="/audio/RDM_Analog_SY1-Kick01.wav" />
-          </section>
+          <section className="grid grid-cols-4 grid-rows-4"></section>
         </div>
-      </AudioContextProvider>
+      </ClockProvider>
     </div>
   );
 }
