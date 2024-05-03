@@ -1,43 +1,7 @@
 'use client';
 
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { useAudioContext } from './ClockProvider';
-
-const Range = ({
-  label,
-  onChange,
-  min,
-  max,
-  step,
-  value,
-  id,
-}: {
-  label: string;
-  onChange?: (num: number) => void;
-  min: number;
-  max: number;
-  step: number;
-  id: string;
-  value: number;
-}) => {
-  return (
-    <div className="p-4">
-      <label htmlFor={id} className="block mb-1 text-sm font-medium text-gray-900 dark:text-white">
-        {label}
-      </label>
-      <input
-        id={id}
-        type="range"
-        min={min}
-        max={max}
-        value={value}
-        step={step}
-        onChange={(e) => (onChange ? onChange(parseFloat(e.target.value)) : undefined)}
-        className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
-      />
-    </div>
-  );
-};
 
 const Metronome: React.FC<{ audioContext: AudioContext }> = ({ audioContext }) => {
   const { start, clockRunning, currentBeat, scheduleEvent, currentTempo, setTempo } =
@@ -48,7 +12,6 @@ const Metronome: React.FC<{ audioContext: AudioContext }> = ({ audioContext }) =
       scheduleEvent((beat, time) => {
         const osc = audioContext.createOscillator();
         osc.connect(audioContext.destination);
-
         if (beat % 16 === 0) {
           osc.frequency.value = 880.0;
         } else if (beat % 4 === 0) {
@@ -65,16 +28,23 @@ const Metronome: React.FC<{ audioContext: AudioContext }> = ({ audioContext }) =
 
   return (
     <div className="flex flex-col mx-auto">
-      <Range
-        label={`Tempo: ${currentTempo}`}
-        onChange={setTempo}
-        min={60}
-        max={240}
-        step={1}
-        id="tempo-ctrl"
-        value={currentTempo}
-      />
-      <div className="p-4">Step: {currentBeat}</div>
+      <div className="p-4">
+        <label
+          htmlFor="tempo-ctrl"
+          className="block mb-1 text-sm font-medium text-gray-900 dark:text-white">
+          Tempo: {currentTempo}
+        </label>
+        <input
+          id="tempo-ctrl"
+          type="range"
+          min={60}
+          max={240}
+          value={currentTempo}
+          step={1}
+          onChange={(e) => setTempo(parseFloat(e.target.value))}
+          className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+        />
+      </div>
       <button
         type="button"
         onClick={start}

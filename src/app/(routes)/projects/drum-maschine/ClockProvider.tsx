@@ -10,14 +10,6 @@ import {
   useContext,
 } from 'react';
 
-let startTime; // The start time of the entire sequence.
-// let lookaheadMs = 10; // How frequently to call scheduling function (in milliseconds)
-// let scheduleAheadTimeSecs = 0.15; // How far ahead to schedule audio (sec)
-
-const toleranceLate = 0.1;
-const toleranceEarly = 0.001;
-// This is calculated from lookaheadMs, and overlaps
-
 type ProviderProps = {
   children: React.ReactNode;
   audioContext: AudioContext;
@@ -28,7 +20,6 @@ type ProviderProps = {
 };
 
 type ContextProps = {
-  getCurrentTime: () => number;
   start: () => void;
   clockRunning: boolean;
   currentTempo: number;
@@ -38,7 +29,6 @@ type ContextProps = {
 };
 
 const Context = createContext<ContextProps>({
-  getCurrentTime: () => 0,
   clockRunning: false,
   currentBeat: 0,
   currentTempo: 120,
@@ -76,7 +66,7 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, option
 
   const [tempo, setTempo] = useState(120);
   const [beatCount, setBeatCount] = useState(0);
-  const [startClock, setStartClock] = useState(false);
+  const [clockRunning, setClockRunning] = useState(false);
 
   const nextNote = useCallback(() => {
     const secondsPerBeat = 60.0 / tempo; // Notice this picks up the CURRENT tempo value to calculate beat length.
@@ -118,7 +108,7 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, option
   }, [lookaheadMs, scheduler, worker]);
 
   useEffect(() => {
-    if (startClock) {
+    if (clockRunning) {
       if (audioContext.state === 'suspended') {
         audioContext.resume();
       }
@@ -130,18 +120,17 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, option
       worker?.postMessage('stop');
       scheduledEvents.splice(0, scheduledEvents.length);
     }
-  }, [audioContext, scheduleAheadTimeSecs, scheduledEvents, startClock, worker]);
+  }, [audioContext, scheduleAheadTimeSecs, scheduledEvents, clockRunning, worker]);
 
   return (
     <Context.Provider
       value={{
-        getCurrentTime: () => audioContext.currentTime,
         currentBeat: beatCount,
         currentTempo: tempo,
-        clockRunning: startClock,
+        clockRunning,
+        start: () => setClockRunning((prev) => !prev),
         scheduleEvent,
         setTempo: (num: number) => setTempo(num),
-        start: () => setStartClock((prev) => !prev),
       }}>
       {children}
     </Context.Provider>

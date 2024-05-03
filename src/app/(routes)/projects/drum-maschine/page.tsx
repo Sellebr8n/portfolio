@@ -27,7 +27,13 @@ export default function DrumMaschine() {
         </div>
         <div className="p-8">
           <h2>Drum Maschine</h2>
-          <section className="grid grid-cols-4 grid-rows-4"></section>
+          <section className="flex flex-row gap-10">
+            <h3 className='p-2 bg-slate-200 h-[5em] flex items-center'>Kick sample</h3>
+            <div className="p-2 gap-2 bg-indigo-50 w-[5em] h-[5em] border-2 border-indigo-700"></div>
+            <div className="p-2 gap-2 bg-indigo-50 w-[5em] h-[5em] border-2 border-indigo-700"></div>
+            <div className="p-2 gap-2 bg-indigo-50 w-[5em] h-[5em] border-2 border-indigo-700"></div>
+            <div className="p-2 gap-2 bg-indigo-50 w-[5em] h-[5em] border-2 border-indigo-700"></div>
+          </section>
         </div>
       </ClockProvider>
     </div>
