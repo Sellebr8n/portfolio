@@ -2,11 +2,17 @@
 
 import React from 'react';
 import { useClockContext, useScheduleSound } from './ClockProvider';
+import { FaPowerOff, FaPause, FaPlay } from 'react-icons/fa6';
+import classNames from 'classnames';
 
 const Metronome: React.FC = () => {
+  const [active, setActive] = React.useState<boolean>(false);
   const { start, clockRunning, currentTempo, setTempo } = useClockContext();
 
   useScheduleSound((beat, time, actx) => {
+    if (!active) {
+      return;
+    }
     const osc = actx.createOscillator();
     osc.connect(actx.destination);
     if (beat % 16 === 0) {
@@ -23,6 +29,13 @@ const Metronome: React.FC = () => {
 
   return (
     <div className="flex flex-col mx-auto bg-zinc-100 border-2 border-zinc-600 rounded-lg p-8">
+      <FaPowerOff
+        onClick={() => setActive((prev) => !prev)}
+        className={classNames('absolute right-14 top-20 text-lg ', {
+          'text-indigo-600': active,
+          'text-slate-400': !active,
+        })}
+      />
       <div className="p-4">
         <label
           htmlFor="tempo-ctrl"
@@ -44,7 +57,7 @@ const Metronome: React.FC = () => {
         type="button"
         onClick={start}
         className="rounded-full bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-        {clockRunning ? 'Stop' : 'Start'}
+        {clockRunning ? <FaPause /> : <FaPlay />}
       </button>
     </div>
   );

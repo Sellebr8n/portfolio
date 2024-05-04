@@ -16,7 +16,6 @@ const Pad = ({ step }: { step: number }) => {
   useEffect(() => {
     fetchSound('/audio/RDM_Analog_SY1-Kick01.wav').then((data) => {
       setSound(data);
-      console.log('sound loaded');
     });
   }, []);
 
