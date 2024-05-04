@@ -22,7 +22,6 @@ type ProviderProps = {
 
 type ContextProps = {
   clockRunning: boolean;
-  currentBeat: number;
   currentTempo: number;
   audioContext: AudioContext;
   start: () => void;
@@ -35,7 +34,6 @@ type ContextProps = {
 
 const Context = createContext<ContextProps>({
   clockRunning: false,
-  currentBeat: 0,
   currentTempo: 120,
   audioContext: undefined as unknown as AudioContext,
   start: () => undefined,
@@ -62,15 +60,14 @@ export const useClockContext = () => {
 };
 
 export const useScheduleSound = (fn: Subscriber, delay: number) => {
-  const { currentBeat, scheduleEvent, clockRunning } = useClockContext();
+  const { scheduleEvent, clockRunning } = useClockContext();
   useEffect(() => {
-    let unsub: () => void = () => undefined;
+    let descheduleEvent: () => void = () => undefined;
     if (clockRunning) {
-      unsub = scheduleEvent(fn, delay);
+      descheduleEvent = scheduleEvent(fn, delay);
     }
-    return unsub;
-  }, [fn, delay, scheduleEvent, currentBeat, clockRunning]);
-
+    return descheduleEvent;
+  }, [fn, delay, scheduleEvent, clockRunning]);
 };
 
 const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker, options }) => {
@@ -78,9 +75,6 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker
 
   const nextNoteTime = useRef<number>(0.0);
   const current16thNote = useRef<number>(0);
-
-  const [bar, setBar] = useState(0);
-  const [signature, setSignature] = useState(4);
 
   const [tempo, setTempo] = useState(120);
   const [clockRunning, setClockRunning] = useState(false);
@@ -92,7 +86,7 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker
       scheduledEvents.add(fn);
       return () => {
         scheduledEvents.delete(fn);
-      }
+      };
     },
     [scheduledEvents]
   );
@@ -144,7 +138,6 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker
   return (
     <Context.Provider
       value={{
-        currentBeat: current16thNote.current,
         currentTempo: tempo,
         clockRunning,
         scheduleEvent,
