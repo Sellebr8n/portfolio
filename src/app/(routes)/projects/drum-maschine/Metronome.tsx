@@ -1,30 +1,25 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { useAudioContext } from './ClockProvider';
+import React from 'react';
+import { useClockContext, useScheduleSound } from './ClockProvider';
 
-const Metronome: React.FC<{ audioContext: AudioContext }> = ({ audioContext }) => {
-  const { start, clockRunning, currentBeat, scheduleEvent, currentTempo, setTempo } =
-    useAudioContext();
+const Metronome: React.FC = () => {
+  const { start, clockRunning, currentTempo, setTempo } = useClockContext();
 
-  useEffect(() => {
-    if (clockRunning) {
-      scheduleEvent((beat, time) => {
-        const osc = audioContext.createOscillator();
-        osc.connect(audioContext.destination);
-        if (beat % 16 === 0) {
-          osc.frequency.value = 880.0;
-        } else if (beat % 4 === 0) {
-          osc.frequency.value = 440.0;
-        } else {
-          return;
-        }
-        const noteLenght = 0.05; // length of "beep" (in seconds)
-        osc.start(time);
-        osc.stop(time + noteLenght);
-      }, 0);
+  useScheduleSound((beat, time, actx) => {
+    const osc = actx.createOscillator();
+    osc.connect(actx.destination);
+    if (beat % 16 === 0) {
+      osc.frequency.value = 880.0;
+    } else if (beat % 4 === 0) {
+      osc.frequency.value = 440.0;
+    } else {
+      return;
     }
-  }, [audioContext, clockRunning, currentBeat, scheduleEvent]);
+    const noteLenght = 0.05; // length of "beep" (in seconds)
+    osc.start(time);
+    osc.stop(time + noteLenght);
+  }, 0);
 
   return (
     <div className="flex flex-col mx-auto">

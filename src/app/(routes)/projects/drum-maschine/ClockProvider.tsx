@@ -24,8 +24,12 @@ type ContextProps = {
   clockRunning: boolean;
   currentBeat: number;
   currentTempo: number;
+  audioContext: AudioContext;
   start: () => void;
-  scheduleEvent: (fn: (beat: number, time: number) => void, delay: number) => void;
+  scheduleEvent: (
+    fn: (beat: number, time: number, audioContext: AudioContext) => void,
+    delay: number
+  ) => void;
   setTempo: (num: number) => void;
 };
 
@@ -33,6 +37,7 @@ const Context = createContext<ContextProps>({
   clockRunning: false,
   currentBeat: 0,
   currentTempo: 120,
+  audioContext: undefined as unknown as AudioContext,
   start: () => undefined,
   scheduleEvent: () => undefined,
   setTempo: () => undefined,
@@ -46,12 +51,24 @@ enum NoteResolution {
   'half' = 0.5,
 }
 
-export const useAudioContext = () => {
+export const useClockContext = () => {
   const audioCtx = useContext(Context);
   if (!audioCtx) {
     throw new Error('useAudioContext must be used within a AudioContextProvider');
   }
   return audioCtx;
+};
+
+export const useScheduleSound = (
+  fn: (beat: number, time: number, audioContext: AudioContext) => void,
+  delay: number
+) => {
+  const { currentBeat, scheduleEvent, clockRunning } = useClockContext();
+  useEffect(() => {
+    if (clockRunning) {
+      scheduleEvent(fn, delay);
+    }
+  }, [fn, delay, scheduleEvent, currentBeat, clockRunning]);
 };
 
 const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker, options }) => {
@@ -63,10 +80,13 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker
   const [tempo, setTempo] = useState(120);
   const [clockRunning, setClockRunning] = useState(false);
 
-  const scheduledEvents = useMemo(() => [] as ((beat: number, time: number) => void)[], []);
+  const scheduledEvents = useMemo(
+    () => [] as ((beat: number, time: number, audioContext: AudioContext) => void)[],
+    []
+  );
 
   const scheduleEvent = useCallback(
-    (fn: (beat: number, time: number) => void, delay: number) => {
+    (fn: (beat: number, time: number, audioContext: AudioContext) => void, delay: number) => {
       scheduledEvents.push(fn);
     },
     [scheduledEvents]
@@ -75,15 +95,14 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker
   const scheduler = useCallback(() => {
     while (nextNoteTime.current < audioContext.currentTime + scheduleAheadTimeSecs) {
       scheduledEvents.forEach((fn, index) => {
-        fn(current16thNote, nextNoteTime.current);
+        fn(current16thNote, nextNoteTime.current, audioContext);
         scheduledEvents.splice(index, 1);
       });
-
       const secondsPerBeat = 60.0 / tempo; // Notice this picks up the CURRENT tempo value to calculate beat length.
       nextNoteTime.current += NoteResolution.quarter * secondsPerBeat; // Add beat length to last beat time
       setCurrent16thNote((prev) => (prev + 1) % 16);
     }
-  }, [audioContext.currentTime, current16thNote, scheduleAheadTimeSecs, scheduledEvents, tempo]);
+  }, [audioContext, current16thNote, scheduleAheadTimeSecs, scheduledEvents, tempo]);
 
   useEffect(() => {
     worker.onmessage = (e) => {
@@ -101,9 +120,9 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker
       if (audioContext.state === 'suspended') {
         audioContext.resume();
       }
-      setCurrent16thNote(0);
       nextNoteTime.current = audioContext.currentTime + scheduleAheadTimeSecs;
       worker.postMessage('start');
+      setCurrent16thNote(0);
     } else {
       worker.postMessage('stop');
       scheduledEvents.splice(0, scheduledEvents.length);
@@ -116,8 +135,9 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker
         currentBeat: current16thNote,
         currentTempo: tempo,
         clockRunning,
-        start: () => setClockRunning((prev) => !prev),
         scheduleEvent,
+        audioContext,
+        start: () => setClockRunning((prev) => !prev),
         setTempo: (num: number) => setTempo(num),
       }}>
       {children}
