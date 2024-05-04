@@ -19,11 +19,8 @@ const Pad = ({ step, audioSrc }: { step: number; audioSrc: string }) => {
     });
   }, [audioSrc]);
 
-  useScheduleSound(({ beat, time, context }) => {
-    if (beat % 4 !== 0) {
-      return;
-    }
-    if (active && sound && step === beat / 4 + 1) {
+  useScheduleSound('quarter', ({ beat, time, context }) => {
+    if (active && sound && step === beat) {
       const source = context.createBufferSource();
       source.buffer = sound;
       source.connect(context.destination);
@@ -44,10 +41,8 @@ const Pad = ({ step, audioSrc }: { step: number; audioSrc: string }) => {
 const Sequencer = () => {
   const [beat, setBeat] = useState<number>(1);
 
-  useScheduleSound(({ beat }) => {
-    if (beat % 16 === 0 || beat % 4 === 0) {
-      setBeat(beat / 4 + 1);
-    }
+  useScheduleSound('quarter', ({ beat }) => {
+    setBeat(beat);
   });
 
   return (

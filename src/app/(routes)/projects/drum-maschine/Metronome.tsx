@@ -7,7 +7,7 @@ const Metronome: React.FC = () => {
   const [active, setActive] = React.useState<boolean>(false);
   const { start, clockRunning, currentTempo, setTempo } = useClockContext();
 
-  useScheduleSound(({ beat, time, context }) => {
+  useScheduleSound('quarter', ({ beat, time, context }) => {
     if (!active) {
       return;
     }
@@ -16,13 +16,7 @@ const Metronome: React.FC = () => {
     gain.gain.value = 0.1;
     osc.connect(gain);
     gain.connect(context.destination);
-    if (beat % 16 === 0) {
-      osc.frequency.value = 880.0;
-    } else if (beat % 4 === 0) {
-      osc.frequency.value = 440.0;
-    } else {
-      return;
-    }
+    osc.frequency.value = beat === 1 ? 880 : 440;
     const noteLenght = 0.05; // length of "beep" (in seconds)
     osc.start(time);
     osc.stop(time + noteLenght);

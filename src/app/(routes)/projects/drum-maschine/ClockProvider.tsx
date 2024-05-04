@@ -1,5 +1,6 @@
 'use client';
 
+import { nanoid } from 'nanoid';
 import {
   createContext,
   useState,
@@ -25,7 +26,7 @@ type ContextProps = {
   currentTempo: number;
   audioContext: AudioContext;
   start: () => void;
-  scheduleEvent: (fn: (options: SubscriberOptions) => void) => () => void;
+  scheduleEvent: (beatCount: Beats, fn: (options: SubscriberOptions) => void) => () => void;
   setTempo: (num: number) => void;
 };
 
@@ -52,7 +53,7 @@ type SubscriberOptions = {
   context: AudioContext;
 };
 
-// type Beats = 'sixteenths' | 'eights' | 'quarter' | 'third' | 'half';
+type Beats = 'sixteenths' | 'eights' | 'quarter';
 
 type Subscriber = (options: SubscriberOptions) => void;
 
@@ -64,15 +65,15 @@ export const useClockContext = () => {
   return audioCtx;
 };
 
-export const useScheduleSound = (fn: Subscriber) => {
+export const useScheduleSound = (beatCount: Beats, fn: Subscriber) => {
   const { scheduleEvent, clockRunning } = useClockContext();
   useEffect(() => {
     let descheduleEvent: () => void = () => undefined;
     if (clockRunning) {
-      descheduleEvent = scheduleEvent(fn);
+      descheduleEvent = scheduleEvent(beatCount, fn);
     }
     return descheduleEvent;
-  }, [fn, scheduleEvent, clockRunning]);
+  }, [fn, scheduleEvent, clockRunning, beatCount]);
 };
 
 const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker, options }) => {
@@ -84,13 +85,14 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker
   const [tempo, setTempo] = useState(120);
   const [clockRunning, setClockRunning] = useState(false);
 
-  const scheduledEvents = useMemo(() => new Set<Subscriber>(), []);
+  const scheduledEvents = useMemo(() => new Map<string, [Subscriber, Beats]>(), []);
 
   const scheduleEvent = useCallback(
-    (fn: Subscriber) => {
-      scheduledEvents.add(fn);
+    (beatCount: Beats, fn: Subscriber) => {
+      const id = nanoid();
+      scheduledEvents.set(id, [fn, beatCount]);
       return () => {
-        scheduledEvents.delete(fn);
+        scheduledEvents.delete(id);
       };
     },
     [scheduledEvents]
@@ -98,12 +100,26 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker
 
   const scheduler = useCallback(() => {
     while (nextNoteTime.current < audioContext.currentTime + scheduleAheadTimeSecs) {
-      scheduledEvents.forEach((fn) => {
-        fn({
-          beat: current16thNote.current,
-          time: nextNoteTime.current,
-          context: audioContext,
-        });
+      scheduledEvents.forEach(([fn, beatCount]) => {
+        if (beatCount === 'quarter' && current16thNote.current % 4 === 0) {
+          fn({
+            beat: Math.floor(current16thNote.current / 4) + 1,
+            time: nextNoteTime.current,
+            context: audioContext,
+          });
+        } else if (beatCount === 'eights' && current16thNote.current % 2 === 0) {
+          fn({
+            beat: Math.floor(current16thNote.current / 2) + 1,
+            time: nextNoteTime.current,
+            context: audioContext,
+          });
+        } else if (beatCount === 'sixteenths') {
+          fn({
+            beat: current16thNote.current,
+            time: nextNoteTime.current,
+            context: audioContext,
+          });
+        }
       });
 
       /** Setup next bar **/
