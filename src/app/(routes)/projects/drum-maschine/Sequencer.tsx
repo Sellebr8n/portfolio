@@ -19,14 +19,11 @@ const Pad = ({ step }: { step: number }) => {
     });
   }, []);
 
-  const firstbeatRef = useRef(0);
   useScheduleSound((currentBeat, time, audioContext) => {
     if (currentBeat % 4 !== 0) {
       return;
     }
-    firstbeatRef.current = 0;
-    if (active && sound && step === currentBeat / 4 + 1 && firstbeatRef.current === 0) {
-      firstbeatRef.current = 1;
+    if (active && sound && step === currentBeat / 4 + 1) {
       const source = audioContext.createBufferSource();
       source.buffer = sound;
       source.connect(audioContext.destination);
@@ -80,7 +77,7 @@ const Sequencer = () => {
           })}></div>
 
         <div className="bg-slate-200 p-4">
-          <span className=" text-sm">Kick sample</span>
+          <span className=" text-sm">Kick</span>
         </div>
         <Pad step={1} />
         <Pad step={2} />
