@@ -23,7 +23,6 @@ const Metronome: React.FC = () => {
     } else {
       return;
     }
-    osc.frequency.value = 440.0;
     const noteLenght = 0.05; // length of "beep" (in seconds)
     osc.start(time);
     osc.stop(time + noteLenght);
