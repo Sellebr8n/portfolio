@@ -81,13 +81,13 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker
   const [clockRunning, setClockRunning] = useState(false);
 
   const scheduledEvents = useMemo(
-    () => [] as ((beat: number, time: number, audioContext: AudioContext) => void)[],
+    () => new Set<(beat: number, time: number, audioContext: AudioContext) => void>(),
     []
   );
 
   const scheduleEvent = useCallback(
     (fn: (beat: number, time: number, audioContext: AudioContext) => void, delay: number) => {
-      scheduledEvents.push(fn);
+      scheduledEvents.add(fn);
     },
     [scheduledEvents]
   );
@@ -96,7 +96,7 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker
     while (nextNoteTime.current < audioContext.currentTime + scheduleAheadTimeSecs) {
       scheduledEvents.forEach((fn, index) => {
         fn(current16thNote, nextNoteTime.current, audioContext);
-        scheduledEvents.splice(index, 1);
+        scheduledEvents.delete(fn);
       });
       const secondsPerBeat = 60.0 / tempo; // Notice this picks up the CURRENT tempo value to calculate beat length.
       nextNoteTime.current += NoteResolution.quarter * secondsPerBeat; // Add beat length to last beat time
@@ -125,7 +125,7 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker
       setCurrent16thNote(0);
     } else {
       worker.postMessage('stop');
-      scheduledEvents.splice(0, scheduledEvents.length);
+      scheduledEvents.clear();
     }
   }, [audioContext, scheduleAheadTimeSecs, scheduledEvents, clockRunning, worker]);
 
