@@ -13,6 +13,7 @@ import {
 type ProviderProps = {
   children: React.ReactNode;
   audioContext: AudioContext;
+  worker: Worker;
   options: {
     lookaheadMs: number;
     scheduleAheadTimeSecs: number;
@@ -20,12 +21,12 @@ type ProviderProps = {
 };
 
 type ContextProps = {
-  start: () => void;
   clockRunning: boolean;
+  currentBeat: number;
   currentTempo: number;
+  start: () => void;
   scheduleEvent: (fn: (beat: number, time: number) => void, delay: number) => void;
   setTempo: (num: number) => void;
-  currentBeat: number;
 };
 
 const Context = createContext<ContextProps>({
@@ -53,13 +54,8 @@ export const useAudioContext = () => {
   return audioCtx;
 };
 
-const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, options }) => {
+const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker, options }) => {
   const { lookaheadMs, scheduleAheadTimeSecs } = options;
-
-  const worker = useMemo(() => {
-    if (typeof window === 'undefined') return null;
-    return new Worker('/scripts/metronomeWorker.js');
-  }, []);
 
   const nextNoteTime = useRef<number>(0.0);
   const current16thNote = useRef<number>(0);
@@ -96,7 +92,6 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, option
   }, [audioContext.currentTime, nextNote, scheduleAheadTimeSecs, scheduledEvents]);
 
   useEffect(() => {
-    if (!worker) return;
     worker.onmessage = (e) => {
       if (e.data === 'tick') {
         scheduler();
@@ -115,9 +110,9 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, option
       current16thNote.current = 0;
       setBeatCount(current16thNote.current);
       nextNoteTime.current = audioContext.currentTime + scheduleAheadTimeSecs;
-      worker?.postMessage('start');
+      worker.postMessage('start');
     } else {
-      worker?.postMessage('stop');
+      worker.postMessage('stop');
       scheduledEvents.splice(0, scheduledEvents.length);
     }
   }, [audioContext, scheduleAheadTimeSecs, scheduledEvents, clockRunning, worker]);
