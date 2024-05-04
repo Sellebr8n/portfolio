@@ -19,17 +19,17 @@ const Pad = ({ step, audioSrc }: { step: number; audioSrc: string }) => {
     });
   }, [audioSrc]);
 
-  useScheduleSound((currentBeat, time, audioContext) => {
-    if (currentBeat % 4 !== 0) {
+  useScheduleSound(({ beat, time, context }) => {
+    if (beat % 4 !== 0) {
       return;
     }
-    if (active && sound && step === currentBeat / 4 + 1) {
-      const source = audioContext.createBufferSource();
+    if (active && sound && step === beat / 4 + 1) {
+      const source = context.createBufferSource();
       source.buffer = sound;
-      source.connect(audioContext.destination);
+      source.connect(context.destination);
       source.start(time + Math.random() * 0.01);
     }
-  }, 0);
+  });
 
   return (
     <div
@@ -44,11 +44,11 @@ const Pad = ({ step, audioSrc }: { step: number; audioSrc: string }) => {
 const Sequencer = () => {
   const [beat, setBeat] = useState<number>(1);
 
-  useScheduleSound((currentBeat) => {
-    if (currentBeat % 16 === 0 || currentBeat % 4 === 0) {
-      setBeat(currentBeat / 4 + 1);
+  useScheduleSound(({ beat }) => {
+    if (beat % 16 === 0 || beat % 4 === 0) {
+      setBeat(beat / 4 + 1);
     }
-  }, 0);
+  });
 
   return (
     <div className="p-8">

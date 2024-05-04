@@ -1,5 +1,3 @@
-'use client';
-
 import React from 'react';
 import { useClockContext, useScheduleSound } from './ClockProvider';
 import { FaPowerOff, FaPause, FaPlay } from 'react-icons/fa6';
@@ -9,15 +7,15 @@ const Metronome: React.FC = () => {
   const [active, setActive] = React.useState<boolean>(false);
   const { start, clockRunning, currentTempo, setTempo } = useClockContext();
 
-  useScheduleSound((beat, time, actx) => {
+  useScheduleSound(({ beat, time, context }) => {
     if (!active) {
       return;
     }
-    const osc = actx.createOscillator();
-    const gain = actx.createGain();
+    const osc = context.createOscillator();
+    const gain = context.createGain();
     gain.gain.value = 0.1;
     osc.connect(gain);
-    gain.connect(actx.destination);
+    gain.connect(context.destination);
     if (beat % 16 === 0) {
       osc.frequency.value = 880.0;
     } else if (beat % 4 === 0) {
@@ -25,10 +23,11 @@ const Metronome: React.FC = () => {
     } else {
       return;
     }
+    osc.frequency.value = 440.0;
     const noteLenght = 0.05; // length of "beep" (in seconds)
     osc.start(time);
     osc.stop(time + noteLenght);
-  }, 0);
+  });
 
   return (
     <div className="flex flex-col mx-auto bg-zinc-100 border-2 border-zinc-600 rounded-lg p-8">

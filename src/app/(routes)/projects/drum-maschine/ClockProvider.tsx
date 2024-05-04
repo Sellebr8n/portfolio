@@ -25,10 +25,7 @@ type ContextProps = {
   currentTempo: number;
   audioContext: AudioContext;
   start: () => void;
-  scheduleEvent: (
-    fn: (beat: number, time: number, audioContext: AudioContext) => void,
-    delay: number
-  ) => () => void;
+  scheduleEvent: (fn: (options: SubscriberOptions) => void) => () => void;
   setTempo: (num: number) => void;
 };
 
@@ -49,7 +46,15 @@ enum Signature {
   'half' = 0.5,
 }
 
-type Subscriber = (beat: number, time: number, audioContext: AudioContext) => void;
+type SubscriberOptions = {
+  beat: number;
+  time: number;
+  context: AudioContext;
+};
+
+// type Beats = 'sixteenths' | 'eights' | 'quarter' | 'third' | 'half';
+
+type Subscriber = (options: SubscriberOptions) => void;
 
 export const useClockContext = () => {
   const audioCtx = useContext(Context);
@@ -59,15 +64,15 @@ export const useClockContext = () => {
   return audioCtx;
 };
 
-export const useScheduleSound = (fn: Subscriber, delay: number) => {
+export const useScheduleSound = (fn: Subscriber) => {
   const { scheduleEvent, clockRunning } = useClockContext();
   useEffect(() => {
     let descheduleEvent: () => void = () => undefined;
     if (clockRunning) {
-      descheduleEvent = scheduleEvent(fn, delay);
+      descheduleEvent = scheduleEvent(fn);
     }
     return descheduleEvent;
-  }, [fn, delay, scheduleEvent, clockRunning]);
+  }, [fn, scheduleEvent, clockRunning]);
 };
 
 const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker, options }) => {
@@ -82,7 +87,7 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker
   const scheduledEvents = useMemo(() => new Set<Subscriber>(), []);
 
   const scheduleEvent = useCallback(
-    (fn: Subscriber, delay: number) => {
+    (fn: Subscriber) => {
       scheduledEvents.add(fn);
       return () => {
         scheduledEvents.delete(fn);
@@ -94,11 +99,15 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker
   const scheduler = useCallback(() => {
     while (nextNoteTime.current < audioContext.currentTime + scheduleAheadTimeSecs) {
       scheduledEvents.forEach((fn) => {
-        fn(current16thNote.current, nextNoteTime.current, audioContext);
+        fn({
+          beat: current16thNote.current,
+          time: nextNoteTime.current,
+          context: audioContext,
+        });
       });
 
-      /** Setup next bar */
-      const beatDurationSeconds = 60.0 / tempo; // Notice this picks up the CURRENT tempo value to calculate beat length.
+      /** Setup next bar **/
+      const beatDurationSeconds = 60.0 / tempo; // Notice this picks up the current tempo value to calculate beat length.
       const barDurationSeconds = Signature.quarter * beatDurationSeconds; // Add beat length to last beat time
 
       nextNoteTime.current += barDurationSeconds; // Advance the beat time by a beat length
