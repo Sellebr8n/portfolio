@@ -58,18 +58,10 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker
   const { lookaheadMs, scheduleAheadTimeSecs } = options;
 
   const nextNoteTime = useRef<number>(0.0);
-  const current16thNote = useRef<number>(0);
 
+  const [current16thNote, setCurrent16thNote] = useState(0);
   const [tempo, setTempo] = useState(120);
-  const [beatCount, setBeatCount] = useState(0);
   const [clockRunning, setClockRunning] = useState(false);
-
-  const nextNote = useCallback(() => {
-    const secondsPerBeat = 60.0 / tempo; // Notice this picks up the CURRENT tempo value to calculate beat length.
-    nextNoteTime.current += NoteResolution.quarter * secondsPerBeat; // Add beat length to last beat time
-    current16thNote.current = (current16thNote.current + 1) % 16;
-    setBeatCount(current16thNote.current);
-  }, [tempo]);
 
   const scheduledEvents = useMemo(() => [] as ((beat: number, time: number) => void)[], []);
 
@@ -83,20 +75,22 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker
   const scheduler = useCallback(() => {
     while (nextNoteTime.current < audioContext.currentTime + scheduleAheadTimeSecs) {
       scheduledEvents.forEach((fn, index) => {
-        fn(current16thNote.current, nextNoteTime.current);
+        fn(current16thNote, nextNoteTime.current);
         scheduledEvents.splice(index, 1);
       });
 
-      nextNote();
+      const secondsPerBeat = 60.0 / tempo; // Notice this picks up the CURRENT tempo value to calculate beat length.
+      nextNoteTime.current += NoteResolution.quarter * secondsPerBeat; // Add beat length to last beat time
+      setCurrent16thNote((prev) => (prev + 1) % 16);
     }
-  }, [audioContext.currentTime, nextNote, scheduleAheadTimeSecs, scheduledEvents]);
+  }, [audioContext.currentTime, current16thNote, scheduleAheadTimeSecs, scheduledEvents, tempo]);
 
   useEffect(() => {
     worker.onmessage = (e) => {
       if (e.data === 'tick') {
         scheduler();
       } else {
-        console.log('message: ' + e.data);
+        throw new Error('Unknown message: ' + e.data);
       }
     };
     worker.postMessage({ interval: lookaheadMs });
@@ -107,8 +101,7 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker
       if (audioContext.state === 'suspended') {
         audioContext.resume();
       }
-      current16thNote.current = 0;
-      setBeatCount(current16thNote.current);
+      setCurrent16thNote(0);
       nextNoteTime.current = audioContext.currentTime + scheduleAheadTimeSecs;
       worker.postMessage('start');
     } else {
@@ -120,7 +113,7 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker
   return (
     <Context.Provider
       value={{
-        currentBeat: beatCount,
+        currentBeat: current16thNote,
         currentTempo: tempo,
         clockRunning,
         start: () => setClockRunning((prev) => !prev),
