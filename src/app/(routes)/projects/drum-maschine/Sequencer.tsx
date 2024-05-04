@@ -10,14 +10,14 @@ const fetchSound = async (audioSrc: string) => {
   return audioBuffer;
 };
 
-const Pad = ({ step }: { step: number }) => {
+const Pad = ({ step, audioSrc }: { step: number; audioSrc: string }) => {
   const [active, setActive] = useState<boolean>(false);
   const [sound, setSound] = useState<AudioBuffer>();
   useEffect(() => {
-    fetchSound('/audio/RDM_Analog_SY1-Kick01.wav').then((data) => {
+    fetchSound(audioSrc).then((data) => {
       setSound(data);
     });
-  }, []);
+  }, [audioSrc]);
 
   useScheduleSound((currentBeat, time, audioContext) => {
     if (currentBeat % 4 !== 0) {
@@ -53,7 +53,7 @@ const Sequencer = () => {
   return (
     <div className="p-8">
       <h2>Sequencer</h2>
-      <section className="grid grid-cols-5 gap-4 grid-rows-2 bg-zinc-100 border-2 border-zinc-600 rounded-lg p-8">
+      <section className="grid grid-cols-5 gap-4 grid-rows-3 bg-zinc-100 border-2 border-zinc-600 rounded-lg p-8">
         <div />
         <div
           className={classNames('max-h-6 max-w-6 p-4 rounded-full', {
@@ -79,10 +79,17 @@ const Sequencer = () => {
         <div className="bg-slate-200 p-4">
           <span className=" text-sm">Kick</span>
         </div>
-        <Pad step={1} />
-        <Pad step={2} />
-        <Pad step={3} />
-        <Pad step={4} />
+        <Pad audioSrc="/audio/RDM_Analog_SY1-Kick01.wav" step={1} />
+        <Pad audioSrc="/audio/RDM_Analog_SY1-Kick01.wav" step={2} />
+        <Pad audioSrc="/audio/RDM_Analog_SY1-Kick01.wav" step={3} />
+        <Pad audioSrc="/audio/RDM_Analog_SY1-Kick01.wav" step={4} />
+        <div className="bg-slate-200 p-4">
+          <span className=" text-sm">Snare</span>
+        </div>
+        <Pad audioSrc="/audio/RDM_Analog_SY1-Snr01.wav" step={1} />
+        <Pad audioSrc="/audio/RDM_Analog_SY1-Snr01.wav" step={2} />
+        <Pad audioSrc="/audio/RDM_Analog_SY1-Snr01.wav" step={3} />
+        <Pad audioSrc="/audio/RDM_Analog_SY1-Snr01.wav" step={4} />
       </section>
     </div>
   );

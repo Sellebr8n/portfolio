@@ -14,7 +14,10 @@ const Metronome: React.FC = () => {
       return;
     }
     const osc = actx.createOscillator();
-    osc.connect(actx.destination);
+    const gain = actx.createGain();
+    gain.gain.value = 0.1;
+    osc.connect(gain);
+    gain.connect(actx.destination);
     if (beat % 16 === 0) {
       osc.frequency.value = 880.0;
     } else if (beat % 4 === 0) {
