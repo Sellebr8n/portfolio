@@ -22,7 +22,7 @@ const Metronome: React.FC = () => {
   }, 0);
 
   return (
-    <div className="flex flex-col mx-auto">
+    <div className="flex flex-col mx-auto bg-zinc-100 border-2 border-zinc-600 rounded-lg p-8">
       <div className="p-4">
         <label
           htmlFor="tempo-ctrl"

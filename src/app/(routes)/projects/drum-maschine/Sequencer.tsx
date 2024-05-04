@@ -1,9 +1,39 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useScheduleSound } from './ClockProvider';
 import classNames from 'classnames';
 
-const Pad = () => {
+const fetchSound = async (audioSrc: string) => {
+  const response = await fetch(audioSrc);
+  const arrayBuffer = await response.arrayBuffer();
+  const audioContext = new AudioContext();
+  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+  return audioBuffer;
+};
+
+const Pad = ({ step }: { step: number }) => {
   const [active, setActive] = useState<boolean>(false);
+  const [sound, setSound] = useState<AudioBuffer>();
+  useEffect(() => {
+    fetchSound('/audio/RDM_Analog_SY1-Kick01.wav').then((data) => {
+      setSound(data);
+      console.log('sound loaded');
+    });
+  }, []);
+
+  const firstbeatRef = useRef(0);
+  useScheduleSound((currentBeat, time, audioContext) => {
+    if (currentBeat % 4 !== 0) {
+      return;
+    }
+    firstbeatRef.current = 0;
+    if (active && sound && step === currentBeat / 4 + 1 && firstbeatRef.current === 0) {
+      firstbeatRef.current = 1;
+      const source = audioContext.createBufferSource();
+      source.buffer = sound;
+      source.connect(audioContext.destination);
+      source.start(time + Math.random() * 0.01);
+    }
+  }, 0);
 
   return (
     <div
@@ -27,8 +57,7 @@ const Sequencer = () => {
   return (
     <div className="p-8">
       <h2>Sequencer</h2>
-      <div>current beat: {beat}</div>
-      <section className="grid grid-cols-5 gap-4 grid-rows-2">
+      <section className="grid grid-cols-5 gap-4 grid-rows-2 bg-zinc-100 border-2 border-zinc-600 rounded-lg p-8">
         <div />
         <div
           className={classNames('max-h-6 max-w-6 p-4 rounded-full', {
@@ -54,10 +83,10 @@ const Sequencer = () => {
         <div className="bg-slate-200 p-4">
           <span className=" text-sm">Kick sample</span>
         </div>
-        <Pad />
-        <Pad />
-        <Pad />
-        <Pad />
+        <Pad step={1} />
+        <Pad step={2} />
+        <Pad step={3} />
+        <Pad step={4} />
       </section>
     </div>
   );
