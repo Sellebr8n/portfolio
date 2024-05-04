@@ -43,7 +43,7 @@ const Context = createContext<ContextProps>({
   setTempo: () => undefined,
 });
 
-enum NoteResolution {
+enum Signature {
   'sixteenths' = 0.0625,
   'eights' = 0.125,
   'quarter' = 0.25,
@@ -76,6 +76,9 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker
 
   const nextNoteTime = useRef<number>(0.0);
 
+  const [bar, setBar] = useState(0);
+  const [signature, setSignature] = useState(4);
+
   const [current16thNote, setCurrent16thNote] = useState(0);
   const [tempo, setTempo] = useState(120);
   const [clockRunning, setClockRunning] = useState(false);
@@ -94,12 +97,13 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker
 
   const scheduler = useCallback(() => {
     while (nextNoteTime.current < audioContext.currentTime + scheduleAheadTimeSecs) {
-      scheduledEvents.forEach((fn, index) => {
+      scheduledEvents.forEach((fn) => {
         fn(current16thNote, nextNoteTime.current, audioContext);
         scheduledEvents.delete(fn);
       });
+
       const secondsPerBeat = 60.0 / tempo; // Notice this picks up the CURRENT tempo value to calculate beat length.
-      nextNoteTime.current += NoteResolution.quarter * secondsPerBeat; // Add beat length to last beat time
+      nextNoteTime.current += Signature.quarter * secondsPerBeat; // Add beat length to last beat time
       setCurrent16thNote((prev) => (prev + 1) % 16);
     }
   }, [audioContext, current16thNote, scheduleAheadTimeSecs, scheduledEvents, tempo]);
