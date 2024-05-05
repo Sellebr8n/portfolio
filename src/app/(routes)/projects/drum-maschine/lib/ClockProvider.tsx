@@ -1,5 +1,3 @@
-'use client';
-
 import { nanoid } from 'nanoid';
 import {
   createContext,
@@ -10,6 +8,7 @@ import {
   useEffect,
   useContext,
 } from 'react';
+import { Signature } from '../types';
 
 type ProviderProps = {
   children: React.ReactNode;
@@ -26,7 +25,7 @@ type ContextProps = {
   currentTempo: number;
   audioContext: AudioContext;
   start: () => void;
-  scheduleEvent: (beatCount: Beats, fn: (options: SubscriberOptions) => void) => () => void;
+  scheduleEvent: (signature: Signature, fn: (options: SubscriberOptions) => void) => () => void;
   setTempo: (num: number) => void;
 };
 
@@ -39,7 +38,7 @@ const Context = createContext<ContextProps>({
   setTempo: () => undefined,
 });
 
-enum Signature {
+enum tempoDivisions {
   'sixteenths' = 0.0625,
   'eights' = 0.125,
   'quarter' = 0.25,
@@ -53,8 +52,6 @@ type SubscriberOptions = {
   context: AudioContext;
 };
 
-type Beats = 'sixteenths' | 'eights' | 'quarter';
-
 type Subscriber = (options: SubscriberOptions) => void;
 
 export const useClockContext = () => {
@@ -65,15 +62,15 @@ export const useClockContext = () => {
   return audioCtx;
 };
 
-export const useScheduleSound = (beatCount: Beats, fn: Subscriber) => {
+export const useScheduleSound = (signature: Signature, fn: Subscriber) => {
   const { scheduleEvent, clockRunning } = useClockContext();
   useEffect(() => {
     let descheduleEvent: () => void = () => undefined;
     if (clockRunning) {
-      descheduleEvent = scheduleEvent(beatCount, fn);
+      descheduleEvent = scheduleEvent(signature, fn);
     }
     return descheduleEvent;
-  }, [fn, scheduleEvent, clockRunning, beatCount]);
+  }, [fn, scheduleEvent, clockRunning, signature]);
 };
 
 const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker, options }) => {
@@ -82,15 +79,15 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker
   const nextNoteTime = useRef<number>(0.0);
   const current16thNote = useRef<number>(0);
 
-  const [tempo, setTempo] = useState(120);
+  const [tempo, setTempo] = useState(80);
   const [clockRunning, setClockRunning] = useState(false);
 
-  const scheduledEvents = useMemo(() => new Map<string, [Subscriber, Beats]>(), []);
+  const scheduledEvents = useMemo(() => new Map<string, [Subscriber, Signature]>(), []);
 
   const scheduleEvent = useCallback(
-    (beatCount: Beats, fn: Subscriber) => {
+    (signature: Signature, fn: Subscriber) => {
       const id = nanoid();
-      scheduledEvents.set(id, [fn, beatCount]);
+      scheduledEvents.set(id, [fn, signature]);
       return () => {
         scheduledEvents.delete(id);
       };
@@ -100,22 +97,22 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker
 
   const scheduler = useCallback(() => {
     while (nextNoteTime.current < audioContext.currentTime + scheduleAheadTimeSecs) {
-      scheduledEvents.forEach(([fn, beatCount]) => {
-        if (beatCount === 'quarter' && current16thNote.current % 4 === 0) {
+      scheduledEvents.forEach(([fn, signature]) => {
+        if (signature === 'quarter' && current16thNote.current % 4 === 0) {
           fn({
             beat: Math.floor(current16thNote.current / 4) + 1,
             time: nextNoteTime.current,
             context: audioContext,
           });
-        } else if (beatCount === 'eights' && current16thNote.current % 2 === 0) {
+        } else if (signature === 'eights' && current16thNote.current % 2 === 0) {
           fn({
             beat: Math.floor(current16thNote.current / 2) + 1,
             time: nextNoteTime.current,
             context: audioContext,
           });
-        } else if (beatCount === 'sixteenths') {
+        } else if (signature === 'sixteenths') {
           fn({
-            beat: current16thNote.current,
+            beat: current16thNote.current + 1,
             time: nextNoteTime.current,
             context: audioContext,
           });
@@ -124,7 +121,7 @@ const ClockProvider: React.FC<ProviderProps> = ({ children, audioContext, worker
 
       /** Setup next bar **/
       const beatDurationSeconds = 60.0 / tempo; // Notice this picks up the current tempo value to calculate beat length.
-      const barDurationSeconds = Signature.quarter * beatDurationSeconds; // Add beat length to last beat time
+      const barDurationSeconds = tempoDivisions.quarter * beatDurationSeconds; // Add beat length to last beat time
 
       nextNoteTime.current += barDurationSeconds; // Advance the beat time by a beat length
       current16thNote.current = (current16thNote.current + 1) % 16;

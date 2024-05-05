@@ -1,9 +1,10 @@
 'use client';
 
-import Metronome from './Metronome';
-import ClockProvider from './ClockProvider';
 import { useEffect, useMemo, useState } from 'react';
-import Sequencer from './Sequencer';
+import ClockProvider from './lib/ClockProvider';
+import Metronome from './components/Metronome';
+import PlayController from './components/PlayController';
+import Sequencer from './components/Sequencer';
 
 export default function DrumMaschine() {
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
@@ -31,10 +32,8 @@ export default function DrumMaschine() {
           lookaheadMs: 10,
           scheduleAheadTimeSecs: 0.15,
         }}>
-        <div className="p-8">
-          <h2>Metronome</h2>
-          <Metronome />
-        </div>
+        <PlayController />
+        <Metronome />
         <Sequencer />
       </ClockProvider>
     </div>
