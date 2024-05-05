@@ -10,81 +10,130 @@ const fetchSound = async (audioSrc: string) => {
   return audioBuffer;
 };
 
-const Pad = ({ step, audioSrc }: { step: number; audioSrc: string }) => {
+const Pad = ({
+  step,
+  sound,
+  signature,
+}: {
+  step: number;
+  sound: AudioBuffer | null;
+  signature: Signatures;
+}) => {
   const [active, setActive] = useState<boolean>(false);
-  const [sound, setSound] = useState<AudioBuffer>();
-  useEffect(() => {
-    fetchSound(audioSrc).then((data) => {
-      setSound(data);
-    });
-  }, [audioSrc]);
 
-  useScheduleSound('quarter', ({ beat, time, context }) => {
+  useScheduleSound(signature, ({ beat, time, context }) => {
     if (active && sound && step === beat) {
       const source = context.createBufferSource();
       source.buffer = sound;
       source.connect(context.destination);
-      source.start(time + Math.random() * 0.01);
+      source.start(time);
     }
   });
 
   return (
     <div
       onClick={() => setActive((prev) => !prev)}
-      className={classNames('max-h-6 max-w-6 p-4', {
+      className={classNames('p-3 flex-1 max-w-4', {
         'bg-indigo-500': active,
-        'bg-slate-200': !active,
+        'bg-slate-100': !active,
       })}></div>
   );
 };
 
-const Sequencer = () => {
-  const [beat, setBeat] = useState<number>(1);
+const Row = ({
+  signature,
+  audioSrc,
+  text,
+  length,
+}: {
+  signature: Signatures;
+  audioSrc: string;
+  text: string;
+  length: number;
+}) => {
+  const [sound, setSound] = useState<AudioBuffer | null>(null);
+  useEffect(() => {
+    fetchSound(audioSrc).then((data) => {
+      setSound(data);
+    });
+  }, [audioSrc]);
+  return (
+    <div className="flex flex-row gap-2 mb-4 items-center border-2 border-zinc-500 p-4">
+      <h3 className="w-16">{text}</h3>
+      {Array.from({ length }).map((_, i) => (
+        <Pad key={`${signature}_${i}`} step={i + 1} sound={sound} signature={signature} />
+      ))}
+    </div>
+  );
+};
 
-  useScheduleSound('quarter', ({ beat }) => {
-    setBeat(beat);
+type Signatures = 'sixteenths' | 'eights' | 'quarter';
+
+const Sequencer = () => {
+  const [currentBeat, setCurrentBeat] = useState<number>(1);
+  const [signature, setSignature] = useState<Signatures>('sixteenths');
+
+  useScheduleSound(signature, ({ beat }) => {
+    setCurrentBeat(beat);
   });
 
-  return (
-    <div className="p-8">
-      <h2>Sequencer</h2>
-      <section className="grid grid-cols-5 gap-4 grid-rows-3 bg-zinc-100 border-2 border-zinc-600 rounded-lg p-8">
-        <div />
-        <div
-          className={classNames('max-h-6 max-w-6 p-4 rounded-full', {
-            'bg-indigo-500': beat === 1,
-            'bg-slate-200': beat !== 1,
-          })}></div>
-        <div
-          className={classNames('max-h-6 max-w-6 p-4 rounded-full', {
-            'bg-indigo-500': beat === 2,
-            'bg-slate-200': beat !== 2,
-          })}></div>
-        <div
-          className={classNames('max-h-6 max-w-6 p-4 rounded-full', {
-            'bg-indigo-500': beat === 3,
-            'bg-slate-200': beat !== 3,
-          })}></div>
-        <div
-          className={classNames('max-h-6 max-w-6 p-4 rounded-full', {
-            'bg-indigo-500': beat === 4,
-            'bg-slate-200': beat !== 4,
-          })}></div>
+  let length = 4;
+  if (signature === 'eights') {
+    length = 8;
+  } else if (signature === 'sixteenths') {
+    length = 16;
+  }
 
-        <div className="bg-slate-200 p-4">
-          <span className=" text-sm">Kick</span>
+  return (
+    <div className="p-8 max-w-screen-md">
+      <h2>Sequencer</h2>
+      <section className="bg-zinc-200 border-2 border-zinc-600 rounded-lg p-8">
+        <select
+          defaultValue={signature}
+          onChange={(e) => setSignature(e.target.value as Signatures)}
+          className="block py-2.5 px-0 mb-4 w-1/3 text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-400 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-400 peer">
+          <option value="quarter">Quarter</option>
+          <option value="eights">Eights</option>
+          <option value="sixteenths">Sixteenths</option>
+        </select>
+        <div />
+
+        <div className="flex flex-row gap-2 mb-4 items-center border-2 border-zinc-500 p-4">
+          <h3 className="w-16"></h3>
+          {Array.from({ length }).map((_, i) => (
+            <div
+              key={`${signature}_${i}_beat`}
+              className={classNames('p-3 w-2 rounded-full', {
+                'bg-orange-500': currentBeat === i + 1,
+                'bg-slate-100': currentBeat !== i + 1,
+              })}
+            />
+          ))}
         </div>
-        <Pad audioSrc="/audio/RDM_Analog_SY1-Kick01.wav" step={1} />
-        <Pad audioSrc="/audio/RDM_Analog_SY1-Kick01.wav" step={2} />
-        <Pad audioSrc="/audio/RDM_Analog_SY1-Kick01.wav" step={3} />
-        <Pad audioSrc="/audio/RDM_Analog_SY1-Kick01.wav" step={4} />
-        <div className="bg-slate-200 p-4">
-          <span className=" text-sm">Snare</span>
-        </div>
-        <Pad audioSrc="/audio/RDM_Analog_SY1-Snr01.wav" step={1} />
-        <Pad audioSrc="/audio/RDM_Analog_SY1-Snr01.wav" step={2} />
-        <Pad audioSrc="/audio/RDM_Analog_SY1-Snr01.wav" step={3} />
-        <Pad audioSrc="/audio/RDM_Analog_SY1-Snr01.wav" step={4} />
+        <Row
+          length={length}
+          signature={signature}
+          audioSrc="/audio/RDM_Analog_SY1-Kick01.wav"
+          text="Kick"
+        />
+        <Row
+          length={length}
+          signature={signature}
+          audioSrc="/audio/RDM_Analog_SY1-Snr01.wav"
+          text="Snare"
+        />
+        <Row
+          length={length}
+          signature={signature}
+          audioSrc="/audio/RDM_Analog_SY1-ClHat.wav"
+          text="Cl HH"
+        />
+        <Row
+          length={length}
+          signature={signature}
+          audioSrc="/audio/RDM_Analog_MT40-Clave.wav"
+          text="Clave"
+        />
       </section>
     </div>
   );
