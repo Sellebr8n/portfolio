@@ -6,7 +6,7 @@ const PlayController: React.FC = () => {
   const { start, clockRunning, currentTempo, setTempo } = useClockContext();
 
   return (
-    <div className="p-8 max-w-[250px]">
+    <div className="flex flex-col flex-1 p-8">
       <h2>Play controller</h2>
       <div className="p-4 flex flex-col bg-zinc-100 border-2 border-zinc-600 rounded-lg">
         <div>Current Tempo: {currentTempo}</div>

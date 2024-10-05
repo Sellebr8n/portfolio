@@ -53,7 +53,7 @@ const Links = () => {
           'dark:shadow-none dark:hover:bg-zinc-900',
           'hover:bg-zinc-200'
         )}
-        href="/blog">
+        href="/blogs">
         Blog
       </Link>
     </div>

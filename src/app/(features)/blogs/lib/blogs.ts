@@ -6,7 +6,7 @@ import matter from 'gray-matter';
 import { remark } from 'remark';
 import html from 'remark-html';
 
-const postsDirectory = path.join(`${process.cwd()}/src/app/(routes)/blog/(posts)`);
+const postsDirectory = path.join(`${process.cwd()}/src/app/(features)/blogs/(posts)`);
 
 export function getSortedPostsData() {
   const fileNames = fs.readdirSync(postsDirectory);
@@ -35,6 +35,7 @@ export function getAllPostSlugs() {
 }
 
 export async function getPostData(slug: string) {
+  console.log('slug', slug, 'postsDirectory', postsDirectory);
   const fullPath = path.join(postsDirectory, `${slug}.md`);
   const fileContents = fs.readFileSync(fullPath, 'utf8');
 

@@ -8,7 +8,7 @@ const BlogsPage = () => {
       <ul className="flex flex-col items-center">
         {posts.map((post) => (
           <li key={post.params.slug} className="mb-4">
-            <a href={`/blog/${post.params.slug}`} className="text-blue-500 hover:underline">
+            <a href={`/blogs/${post.params.slug}`} className="text-blue-500 hover:underline">
               {post.params.slug}
             </a>
           </li>

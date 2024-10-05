@@ -30,10 +30,12 @@ export default function DrumMaschine() {
         worker={worker}
         options={{
           lookaheadMs: 10,
-          scheduleAheadTimeSecs: 0.15,
+          scheduleAheadTimeSecs: 0.1,
         }}>
-        <PlayController />
-        <Metronome />
+        <div className="flex">
+          <PlayController />
+          <Metronome />
+        </div>
         <Sequencer />
       </ClockProvider>
     </div>
