@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import { Roboto_Mono, Inter } from 'next/font/google';
+// import { Sprite } from '@/components/avatar';
+import Navbar from '@/components/navbar';
 import './globals.css';
-
 
 export const metadata: Metadata = {
   title: 'Sellebr8',
@@ -16,7 +16,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {children}
+        <Navbar />
+        <main>{children}</main>
       </body>
     </html>
   );

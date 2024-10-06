@@ -1,0 +1,63 @@
+.timeline {
+  width: 100%;
+  display: block;
+  flex: 1;
+  flex-direction: column;
+
+  .entry {
+    position: relative;
+    display: flex;
+    flex: 1;
+
+    .line {
+      position: absolute;
+      height: 100%;
+      left: 0.85em;
+      top: 0;
+      border-right: 0.2em solid var(--primary-color);
+    }
+
+    .dot {
+      width: 0.5em;
+      height: 0.5em;
+      background-color: white;
+      border-radius: 50%;
+      border: 0.2em solid var(--primary-color);
+      position: absolute;
+      color: var(--primary-color);
+      left: 0.85em;
+      transform: translate(-40%, -50%);
+    }
+
+    .details {
+      display: flex;
+      flex-direction: column;
+      margin-top: -0.78em;
+      margin-left: 2.5em;
+      margin-bottom: 1.5em;
+      font-size: 0.75em;
+      flex: 1;
+
+      .title {
+        margin-top: 0.5em;
+        font-size: 1.1em;
+        font-weight: bold;
+      }
+
+      .body {
+        margin-top: 0.25em;
+        color: black;
+      }
+
+      .date {
+        font-weight: bold;
+        color: var(--primary-color);
+      }
+
+      .invisible-text {
+        color: transparent;
+      }
+    }
+
+  }
+}

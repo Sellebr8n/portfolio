@@ -1,0 +1,32 @@
+header {
+  padding: 1em;
+  hr {
+    margin: 1em 0 0 0;
+    border: 0;
+    border-bottom: 2px solid var(--primary-color);
+  }
+
+  article {
+    padding: 0;
+    p {
+      font-size: 10pt;
+      margin: 0;
+    }
+  }
+
+  h1, h3 {
+    margin: 0;
+  }
+  h1 {
+    font-size: 2em;
+    font-weight: 700;
+    margin-bottom: 0.5em;
+  }
+  
+  h3 {
+    font-size: 1.5em;
+    font-weight: 500;
+    line-height: 0.75em;
+    color: var(--text-subtle-color);
+  }
+}

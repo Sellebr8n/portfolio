@@ -1,0 +1,41 @@
+.layout {
+  display: flex;
+  height: 100%;
+
+  aside {
+    max-width: calc(210px - 2em);
+    display: flex;
+    flex-direction: column;
+    padding: 1em;
+    flex: 1;
+    border-right: 1px solid var(--primary-color);
+    z-index: 1;
+
+    img.avatar {
+      width: 100%;
+      border-radius: 0.2em;
+    }
+  }
+
+  section.content {
+    flex: 1;
+    overflow: none;
+    background-color: #eee;
+  }
+}
+
+.d-flex {
+  display: flex;
+
+  &.flex-col {
+    flex-direction: column;
+  }
+
+  &.flex-row {
+    flex-direction: row;
+  }
+}
+
+.flex-1 {
+  flex: 1;
+}

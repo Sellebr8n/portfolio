@@ -1,21 +1,29 @@
-import { getAllPostSlugs } from "./lib/blogs";
+import Link from 'next/link';
+import { getAllPostSlugs } from './lib/blogs';
 
 const BlogsPage = () => {
   const posts = getAllPostSlugs();
   return (
-    <main className="flex min-h-screen flex-col items-center p-4 text-center">
-      <h1 className="text-4xl font-bold mb-8">Check out some of my blogs</h1>
-      <ul className="flex flex-col items-center">
+    <section className="py-16 bg-gray-50 h-full">
+      <h2 className="text-3xl font-bold text-center text-gray-800">Some of my projects</h2>
+      <div className="grid md:grid-cols-2 gap-8 mt-12 max-w-5xl mx-auto">
         {posts.map((post) => (
-          <li key={post.params.slug} className="mb-4">
-            <a href={`/blogs/${post.params.slug}`} className="text-blue-500 hover:underline">
-              {post.params.slug}
-            </a>
-          </li>
+          <Link
+            href={`/blogs/${post.params.slug}`}
+            key={`/blogs/${post.params.slug}`}
+            className="bg-white shadow-md rounded-lg p-6">
+            <img
+              src="/images/redux.svg"
+              alt="Laget.se"
+              className="w-full h-40 object-cover rounded-t-lg"
+            />
+            <h3 className="mt-4 text-xl font-semibold text-gray-800">{post.params.slug}</h3>
+            {/* <p className="text-gray-500 mt-2">{link.description}</p> */}
+          </Link>
         ))}
-      </ul>
-    </main>
+      </div>
+    </section>
   );
-}
+};
 
 export default BlogsPage;

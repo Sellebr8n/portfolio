@@ -11,53 +11,40 @@ const links = [
     description: 'A drum machine',
     link: '/projects/drum-maschine',
   },
-  // {
-  //   title: 'Pomodoro Clock',
-  //   description: 'A pomodoro clock',
-  //   link: '/projects/pomodoro',
-  // },
-  // {
-  //   title: 'Weather App',
-  //   description: 'A simple weather app using OpenWeatherMap API',
-  //   link: '/projects/weather',
-  // },
-  // {
-  //   title: 'Markdown Previewer',
-  //   description: 'A markdown previewer',
-  //   link: '/projects/markdown',
-  // },
+  {
+    title: 'Pomodoro Clock',
+    description: 'A pomodoro clock',
+    link: '/projects/pomodoro',
+  },
+  {
+    title: 'Weather App',
+    description: 'A simple weather app using OpenWeatherMap API',
+    link: '/projects/weather',
+  },
+  {
+    title: 'Markdown Previewer',
+    description: 'A markdown previewer',
+    link: '/projects/markdown',
+  },
 ];
-
-const Card = ({
-  title,
-  description,
-  link,
-}: {
-  title: string;
-  description: string;
-  link: string;
-}) => (
-  <div className="bg-white shadow-md rounded-lg p-4">
-    <h2 className="text-xl font-bold">{title}</h2>
-    <p>{description}</p>
-    <Link href={link}>Go to {title}</Link>
-  </div>
-);
 
 export default function Projects() {
   return (
-    <main className="flex min-h-screen flex-col items-center p-4 text-center">
-      <h1 className="text-4xl font-bold mb-8">Some of my projects</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+    <section className="py-16 bg-gray-50 h-full">
+      <h2 className="text-3xl font-bold text-center text-gray-800">Some of my projects</h2>
+      <div className="grid md:grid-cols-2 gap-8 mt-12 max-w-5xl mx-auto">
         {links.map((link) => (
-          <Card
-            key={link.title}
-            title={link.title}
-            description={link.description}
-            link={link.link}
-          />
+          <Link href={link.link} key={link.title} className="bg-white shadow-md rounded-lg p-6">
+            <img
+              src="/images/redux.svg"
+              alt="Laget.se"
+              className="w-full h-40 object-cover rounded-t-lg"
+            />
+            <h3 className="mt-4 text-xl font-semibold text-gray-800">{link.title}</h3>
+            <p className="text-gray-500 mt-2">{link.description}</p>
+          </Link>
         ))}
       </div>
-    </main>
+    </section>
   );
 }

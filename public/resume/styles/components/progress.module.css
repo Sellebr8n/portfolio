@@ -1,0 +1,49 @@
+.progress-wrapper {
+  margin-top: 0.5em;
+  gap: 2em;
+  width: 100%;
+  margin-bottom: 1em;
+}
+
+.progress-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 0.5em;
+  margin-bottom: 1em;
+
+  .bar {
+    position: relative;
+    border-radius: 0.5em;
+    height: 100%;
+    width: 100%;
+    border-bottom: 0.35em solid rgb(198, 198, 198);
+  }
+
+  .progress {
+    height: 100%;
+    position: absolute;
+    left: 0;
+    border-bottom: 0.35em solid var(--primary-color);
+    z-index: 10;
+    border-radius: 0.6em 0 0 0.6em;
+  }
+}
+
+ul.zero-to-hero {
+  h3.li-headline {
+    font-size: 1em;
+    font-weight: bold;
+    margin-bottom: 0.25em;
+    margin-top: 0.5em;
+  }
+  /* li {
+    display: list-item;
+    list-style-position: outside;
+    list-style-type: disc;
+    margin-left: 1em;
+    margin-bottom: 0.1em;
+
+  } */
+}

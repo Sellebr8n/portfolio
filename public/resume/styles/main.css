@@ -1,0 +1,88 @@
+@import './components/header.module.css';
+@import './components/typography.module.css';
+@import './components/contact.module.css';
+@import './components/layout.module.css';
+@import './components/timeline.module.css';
+@import './components/card.module.css';
+@import './components/progress.module.css';
+
+:root {
+  --primary-color: #f6a30a;
+  --secondary-color: #262e24;
+  --text-color: #262628;
+  --secondary-text-color: white;
+  --text-subtle-color: #6b6b6b;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+body {
+  font-size: 12pt;
+  line-height: 1.5;
+  width: 100%;
+  height: 100%;
+  color: var(--text-color);
+  font-family: Merriweather;
+  background-color: rgba(27, 27, 33, 0.693);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+main {
+  background-color: white;
+  width: 210mm;
+  height: 297mm;
+  margin: 0 auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.icon-img {
+  width: 1em;
+  height: auto;
+  margin: 0 auto;
+}
+
+ion-icon {
+  font-size: 1em;
+  color: var(--primary-color);
+}
+
+#whoami {
+  h1 {
+    font-size: 2em;
+    line-height: 1.1;
+    margin-top: 0.2em;
+  }
+  h2 {
+    font-size: 1em;
+    color: var(--text-color);
+    line-height: 0;
+  }
+}
+
+.soft-skills {
+  margin-bottom: 1em;
+
+  li {
+    display: inline-block;
+    margin-right: 0.5em;
+    margin-bottom: 0.5em;
+    padding: 0.5em;
+    border-radius: 0.2em;
+    background-color: var(--primary-color);
+    color: var(--secondary-text-color);
+    font-size: 0.55em;
+  }
+}
+
+ul.achievements {
+  li {
+    display: list-item;
+    list-style-position: outside;
+    list-style-type: disc;
+    margin-left: 1.5em;
+  }
+}
