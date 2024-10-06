@@ -35,7 +35,6 @@ export function getAllPostSlugs() {
 }
 
 export async function getPostData(slug: string) {
-  console.log('slug', slug, 'postsDirectory', postsDirectory);
   const fullPath = path.join(postsDirectory, `${slug}.md`);
   const fileContents = fs.readFileSync(fullPath, 'utf8');
 
