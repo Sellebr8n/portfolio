@@ -20,16 +20,16 @@ const links = [
     link: 'https://github.com/Sellebr8n/SharpTypes',
     image: '/images/ts-love-dotnet.webp',
   },
-  {
-    title: 'Weather App',
-    description: 'A simple weather app using OpenWeatherMap API',
-    link: '/projects/weather',
-  },
-  {
-    title: 'Markdown Previewer',
-    description: 'A markdown previewer',
-    link: '/projects/markdown',
-  },
+  // {
+  //   title: 'Weather App',
+  //   description: 'A simple weather app using OpenWeatherMap API',
+  //   link: '/projects/weather',
+  // },
+  // {
+  //   title: 'Markdown Previewer',
+  //   description: 'A markdown previewer',
+  //   link: '/projects/markdown',
+  // },
 ];
 
 export default function Projects() {
