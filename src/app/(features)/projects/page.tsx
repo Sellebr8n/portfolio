@@ -15,9 +15,10 @@ const links = [
     image: '/images/drum-machine.png',
   },
   {
-    title: 'Pomodoro Clock',
-    description: 'A pomodoro clock',
-    link: '/projects/pomodoro',
+    title: 'SharpTypes',
+    description: 'A project that generates TypeScript types from C# classes',
+    link: 'https://github.com/Sellebr8n/SharpTypes',
+    image: '/images/ts-love-dotnet.webp',
   },
   {
     title: 'Weather App',
