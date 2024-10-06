@@ -5,6 +5,7 @@
 @import './components/timeline.module.css';
 @import './components/card.module.css';
 @import './components/progress.module.css';
+@import './components/icon.module.css';
 
 :root {
   --primary-color: #f6a30a;
@@ -72,7 +73,7 @@ ion-icon {
     margin-bottom: 0.5em;
     padding: 0.5em;
     border-radius: 0.2em;
-    background-color: var(--primary-color);
+    background-color: #f6a30a;
     color: var(--secondary-text-color);
     font-size: 0.55em;
   }

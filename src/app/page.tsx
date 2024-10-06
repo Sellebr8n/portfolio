@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { GitHubLogoIcon, LinkedInLogoIcon, OpenInNewWindowIcon } from '@radix-ui/react-icons';
 import Image from 'next/image';
 import Link from 'next/link';
+import DownloadButton from './components/DownloadButton';
 
 export default function Landing() {
   return (
@@ -115,7 +116,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
+      <section id="about" className="py-16 bg-white">
         <div className="max-w-4xl mx-auto flex flex-col items-center">
           <div className="relative w-48 h-48 overflow-hidden rounded-full bg-primary object-cover mb-8 md:mb-0 md:mr-8">
             <Image
@@ -175,37 +176,39 @@ export default function Landing() {
               <OpenInNewWindowIcon className="ml-1" />
             </Button>
             <div>or</div>
-            <Button variant={'default'}>
-              <Link href="#">Download it</Link>
-            </Button>
+            <DownloadButton />
           </div>
         </div>
       </section>
 
       <section className="py-16 bg-gray-50">
-        <h2 className="text-3xl font-bold text-center text-gray-800">What I’ve Built</h2>
+        <h2 className="text-3xl font-bold text-center text-gray-800">Were I've worked</h2>
         <div className="grid md:grid-cols-2 gap-8 mt-12 max-w-5xl mx-auto">
           <div className="bg-white shadow-md rounded-lg p-6">
-            <Image
-              width={200}
-              height={200}
-              src="/images/redux.svg"
-              alt="Laget.se"
-              className="w-full h-40 object-cover rounded-t-lg"
-            />
+            <Link href="https://www.laget.se" target="_blank">
+              <Image
+                width={200}
+                height={200}
+                src="/images/lagetse.png"
+                alt="Laget.se"
+                className="w-full h-40 object-cover rounded-t-lg"
+              />
+            </Link>
             <h3 className="mt-4 text-xl font-semibold text-gray-800">Laget.se</h3>
             <p className="text-gray-500 mt-2">
               A platform for sports clubs to manage teams and finances.
             </p>
           </div>
           <div className="bg-white shadow-md rounded-lg p-6">
-            <Image
-              width={200}
-              height={200}
-              src="/images/js.png"
-              alt="Eyevinn Technology"
-              className="w-full h-40 object-cover rounded-t-lg"
-            />
+            <Link href="https://www.eyevinntechnology.se/" target="_blank">
+              <Image
+                width={200}
+                height={200}
+                src="/images/eyevinn.png"
+                alt="Eyevinn Technology"
+                className="w-full h-40 object-cover rounded-t-lg"
+              />
+            </Link>
             <h3 className="mt-4 text-xl font-semibold text-gray-800">Eyevinn Technology</h3>
             <p className="text-gray-500 mt-2">Streaming solutions for media companies.</p>
           </div>

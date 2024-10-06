@@ -1,0 +1,19 @@
+.icon {
+  display: inline-block;
+
+  vertical-align: -0.15em;
+  overflow: hidden;
+
+  &.circled {
+    font-size: 0.9em;
+    /* color: var(--primary-color); */
+    border: 0.2em solid var(--primary-color);
+    padding: 0.3em;
+    border-radius: 50%;
+  }
+
+  &.small {
+    width: 1.5em;
+    height: 1.5em;
+  }
+}

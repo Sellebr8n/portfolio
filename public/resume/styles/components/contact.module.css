@@ -11,9 +11,5 @@
     align-items: center;
     gap: 1em;
     margin-bottom: 0.5em;
-    ion-icon {
-      font-size: 1em;
-      color: var(--primary-color);
-    }
   }
 }
